@@ -1,18 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { FeatureFlagControls } from "@/components/feature-flag-controls"
-import { MetricsDashboard } from "@/components/metrics-dashboard"
-import { TrafficSimulator } from "@/components/traffic-simulator"
-import { ObservabilityPanel } from "@/components/observability-panel"
-import { OnboardingModal } from "@/components/onboarding-modal"
-import { AppHeader } from "@/components/app-header"
-import { StatsOverview } from "@/components/stats-overview"
-import { Flag, BarChart3, Activity, Users } from "lucide-react"
+import { FeatureFlagControls } from "@/components/FeatureFlagControls"
+import { MetricsDashboard } from "@/components/MetricsDashboard"
+import { TrafficSimulator } from "@/components/TrafficSimulator"
+import { ObservabilityPanel } from "@/components/ObservabilityPanel"
+import { OnboardingModal } from "@/components/OnboardingModal"
+import { LaunchDarklyDemo } from "@/components/LaunchDarklyDemo"
+import { AppHeader } from "@/components/AppHeader"
+import { StatsOverview } from "@/components/StatsOverview"
+import { Flag, BarChart3, Activity, Users, Zap } from "lucide-react"
 
 export function HomePageClient() {
   const [showOnboarding, setShowOnboarding] = useState(true)
@@ -41,8 +39,12 @@ export function HomePageClient() {
           conversionRate={conversionRate}
         />
 
-        <Tabs defaultValue="flags" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+        <Tabs defaultValue="launchdarkly" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="launchdarkly" className="flex items-center gap-2">
+              <Zap className="w-4 h-4" />
+              LaunchDarkly
+            </TabsTrigger>
             <TabsTrigger value="flags" className="flex items-center gap-2">
               <Flag className="w-4 h-4" />
               Feature Flags
@@ -60,6 +62,10 @@ export function HomePageClient() {
               Observability
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="launchdarkly" className="space-y-6">
+            <LaunchDarklyDemo />
+          </TabsContent>
 
           <TabsContent value="flags" className="space-y-6">
             <FeatureFlagControls
