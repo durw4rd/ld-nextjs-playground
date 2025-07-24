@@ -2,6 +2,8 @@
 
 import React, { ReactNode } from "react"
 import { asyncWithLDProvider } from "launchdarkly-react-client-sdk"
+import Observability, { LDObserve } from '@launchdarkly/observability'
+import SessionReplay, { LDRecord } from '@launchdarkly/session-replay'
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 
 interface LaunchDarklyProviderProps {
@@ -34,6 +36,9 @@ export function LaunchDarklyProvider({
   React.useEffect(() => {
     const initializeLaunchDarkly = async () => {
       try {
+        // Check if observability plugins should be enabled
+        const enableObservability = process.env.NEXT_PUBLIC_ENABLE_OBSERVABILITY === 'true'
+        
         const provider = await asyncWithLDProvider({
           clientSideID,
           context: context || {
@@ -42,9 +47,26 @@ export function LaunchDarklyProvider({
             name: "Anonymous User"
           },
           options: {
-            bootstrap: 'localStorage',
+            // bootstrap: 'localStorage',
             sendEvents: true,
             evaluationReasons: true,
+            // Only include observability plugins if explicitly enabled
+            ...(enableObservability && {
+              plugins: [
+                new Observability({
+                  tracingOrigins: true, // attribute frontend requests to backend domains
+                  networkRecording: {
+                    enabled: true,
+                    recordHeadersAndBody: true
+                  }
+                }),
+                new SessionReplay({
+                  privacySetting: 'default',
+                  // or 'default' to redact text matching common regex for PII
+                  // or 'strict' to redact all text and images
+                })
+              ]
+            }),
             ...options
           },
           timeout: 3

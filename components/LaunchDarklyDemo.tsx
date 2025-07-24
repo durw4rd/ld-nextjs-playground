@@ -7,11 +7,14 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useFlags, useLDClient } from "launchdarkly-react-client-sdk"
-import { User, Flag, Zap, Eye } from "lucide-react"
+import { User, Flag, Zap, Eye, Radio, RefreshCw } from "lucide-react"
+import { ConnectionStatus } from "@/components/ConnectionStatus"
+import { useLaunchDarklyConnection } from "@/hooks/useLaunchDarklyConnection"
 
 export function LaunchDarklyDemo() {
   const flags = useFlags()
   const ldClient = useLDClient()
+  const { connectionStatus, isConnected, isInitialized } = useLaunchDarklyConnection()
   const [userKey, setUserKey] = useState("anonymous-user")
   const [userName, setUserName] = useState("Anonymous User")
   const [userEmail, setUserEmail] = useState("")
@@ -40,6 +43,9 @@ export function LaunchDarklyDemo() {
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">LaunchDarkly Demo</h2>
         <p className="text-gray-600 dark:text-gray-400">Real feature flags powered by LaunchDarkly</p>
       </div>
+
+      {/* Connection Status */}
+      <ConnectionStatus />
 
       {/* User Identification */}
       <Card>

@@ -5,11 +5,16 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "dev:clean": "./scripts/dev-clean.sh",
+    "dev:hard": "rm -rf .next && rm -rf node_modules/.cache && npm run dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
+    "@launchdarkly/observability": "^0.3.8",
+    "@launchdarkly/session-replay": "^0.3.8",
     "@radix-ui/react-accordion": "1.2.2",
     "@radix-ui/react-alert-dialog": "1.1.4",
     "@radix-ui/react-aspect-ratio": "1.1.1",

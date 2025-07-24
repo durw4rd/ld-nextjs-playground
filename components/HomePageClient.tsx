@@ -5,21 +5,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FeatureFlagControls } from "@/components/FeatureFlagControls"
 import { MetricsDashboard } from "@/components/MetricsDashboard"
 import { TrafficSimulator } from "@/components/TrafficSimulator"
-import { ObservabilityPanel } from "@/components/ObservabilityPanel"
-import { OnboardingModal } from "@/components/OnboardingModal"
+import { ObservabilityDemo } from "@/components/ObservabilityDemo"
 import { LaunchDarklyDemo } from "@/components/LaunchDarklyDemo"
 import { AppHeader } from "@/components/AppHeader"
 import { StatsOverview } from "@/components/StatsOverview"
 import { Flag, BarChart3, Activity, Users, Zap } from "lucide-react"
 
 export function HomePageClient() {
-  const [showOnboarding, setShowOnboarding] = useState(true)
   const [activeFlags, setActiveFlags] = useState(3)
-  const [totalEvaluations, setTotalEvaluations] = useState(1247)
+  const [totalEvaluations, setTotalEvaluations] = useState(42)
   const [conversionRate, setConversionRate] = useState(12.4)
 
-  const handleHelpClick = () => setShowOnboarding(true)
-  const handleOnboardingClose = () => setShowOnboarding(false)
   const handleFlagChange = (count: number) => setActiveFlags(count)
   const handleEvaluationChange = (count: number) => setTotalEvaluations(count)
   const handleConversionRateChange = (rate: number) => setConversionRate(rate)
@@ -28,9 +24,7 @@ export function HomePageClient() {
 
   return (
     <>
-      <OnboardingModal open={showOnboarding} onClose={handleOnboardingClose} />
-      
-      <AppHeader onHelpClick={handleHelpClick} />
+      <AppHeader />
       
       <div className="container mx-auto px-4 py-6">
         <StatsOverview 
@@ -86,7 +80,7 @@ export function HomePageClient() {
           </TabsContent>
 
           <TabsContent value="observability" className="space-y-6">
-            <ObservabilityPanel />
+            <ObservabilityDemo />
           </TabsContent>
         </Tabs>
       </div>
