@@ -21,7 +21,7 @@ export function useLaunchDarklyConnection() {
     setInitializationAttempted(true)
     try {
       // Wait for initialization with a reasonable timeout
-      await ldClient.waitForInitialization(10)
+      await ldClient.waitForInitialization(3)
       setConnectionStatus("connected")
       setIsInitialized(true)
       setLastUpdate(new Date())

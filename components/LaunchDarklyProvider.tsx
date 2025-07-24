@@ -2,8 +2,8 @@
 
 import React, { ReactNode } from "react"
 import { asyncWithLDProvider } from "launchdarkly-react-client-sdk"
-import Observability, { LDObserve } from '@launchdarkly/observability'
-import SessionReplay, { LDRecord } from '@launchdarkly/session-replay'
+import Observability from '@launchdarkly/observability'
+import SessionReplay from '@launchdarkly/session-replay'
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 
 interface LaunchDarklyProviderProps {
@@ -36,9 +36,6 @@ export function LaunchDarklyProvider({
   React.useEffect(() => {
     const initializeLaunchDarkly = async () => {
       try {
-        // Check if observability plugins should be enabled
-        const enableObservability = process.env.NEXT_PUBLIC_ENABLE_OBSERVABILITY === 'true'
-        
         const provider = await asyncWithLDProvider({
           clientSideID,
           context: context || {
@@ -50,23 +47,21 @@ export function LaunchDarklyProvider({
             // bootstrap: 'localStorage',
             sendEvents: true,
             evaluationReasons: true,
-            // Only include observability plugins if explicitly enabled
-            ...(enableObservability && {
-              plugins: [
-                new Observability({
-                  tracingOrigins: true, // attribute frontend requests to backend domains
-                  networkRecording: {
-                    enabled: true,
-                    recordHeadersAndBody: true
-                  }
-                }),
-                new SessionReplay({
-                  privacySetting: 'default',
-                  // or 'default' to redact text matching common regex for PII
-                  // or 'strict' to redact all text and images
-                })
-              ]
-            }),
+            // Initialize plugins with manual start - they will be controlled by user consent
+            plugins: [
+              new Observability({ 
+                manualStart: true,
+                tracingOrigins: true,
+                networkRecording: {
+                  enabled: true,
+                  recordHeadersAndBody: true
+                }
+              }),
+              new SessionReplay({ 
+                manualStart: true,
+                privacySetting: 'default'
+              })
+            ],
             ...options
           },
           timeout: 3

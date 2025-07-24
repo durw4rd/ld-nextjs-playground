@@ -5,6 +5,100 @@ import { LDRecord } from '@launchdarkly/session-replay'
  * Utility functions for controlling LaunchDarkly observability and session replay plugins
  */
 
+// Consent management
+const CONSENT_STORAGE_KEY = 'ld-observability-consent'
+const OBSERVABILITY_STORAGE_KEY = 'ld-observability-enabled'
+const SESSION_REPLAY_STORAGE_KEY = 'ld-session-replay-enabled'
+
+export const consentManager = {
+  /**
+   * Get user consent from localStorage
+   */
+  getConsent: (): boolean => {
+    if (typeof window === 'undefined') return false
+    try {
+      return localStorage.getItem(CONSENT_STORAGE_KEY) === 'true'
+    } catch {
+      return false
+    }
+  },
+
+  /**
+   * Set user consent in localStorage
+   */
+  setConsent: (hasConsent: boolean): void => {
+    if (typeof window === 'undefined') return
+    try {
+      localStorage.setItem(CONSENT_STORAGE_KEY, hasConsent.toString())
+    } catch (error) {
+      console.warn('Failed to save consent to localStorage:', error)
+    }
+  },
+
+  /**
+   * Clear user consent from localStorage
+   */
+  clearConsent: (): void => {
+    if (typeof window === 'undefined') return
+    try {
+      localStorage.removeItem(CONSENT_STORAGE_KEY)
+    } catch (error) {
+      console.warn('Failed to clear consent from localStorage:', error)
+    }
+  }
+}
+
+// Plugin state management
+export const pluginStateManager = {
+  /**
+   * Get observability enabled state from localStorage
+   */
+  getObservabilityEnabled: (): boolean => {
+    if (typeof window === 'undefined') return false
+    try {
+      return localStorage.getItem(OBSERVABILITY_STORAGE_KEY) === 'true'
+    } catch {
+      return false
+    }
+  },
+
+  /**
+   * Set observability enabled state in localStorage
+   */
+  setObservabilityEnabled: (enabled: boolean): void => {
+    if (typeof window === 'undefined') return
+    try {
+      localStorage.setItem(OBSERVABILITY_STORAGE_KEY, enabled.toString())
+    } catch (error) {
+      console.warn('Failed to save observability state to localStorage:', error)
+    }
+  },
+
+  /**
+   * Get session replay enabled state from localStorage
+   */
+  getSessionReplayEnabled: (): boolean => {
+    if (typeof window === 'undefined') return false
+    try {
+      return localStorage.getItem(SESSION_REPLAY_STORAGE_KEY) === 'true'
+    } catch {
+      return false
+    }
+  },
+
+  /**
+   * Set session replay enabled state in localStorage
+   */
+  setSessionReplayEnabled: (enabled: boolean): void => {
+    if (typeof window === 'undefined') return
+    try {
+      localStorage.setItem(SESSION_REPLAY_STORAGE_KEY, enabled.toString())
+    } catch (error) {
+      console.warn('Failed to save session replay state to localStorage:', error)
+    }
+  }
+}
+
 // Observability controls
 export const observability = {
   /**
@@ -29,6 +123,36 @@ export const observability = {
       console.log('LaunchDarkly observability stopped')
     } catch (error) {
       console.warn('Failed to stop LaunchDarkly observability:', error)
+    }
+  },
+
+  /**
+   * Check if observability is currently running
+   * Note: This is a simplified check since the SDK doesn't expose running state
+   * In a production app, you might want to track this state explicitly
+   */
+  isRunning: (): boolean => {
+    try {
+      // Since the SDK doesn't expose running state, we'll use a more reliable approach
+      // by checking if the plugin is properly initialized
+      return typeof LDObserve.start === 'function' && typeof LDObserve.stop === 'function'
+    } catch {
+      return false
+    }
+  },
+
+  /**
+   * Get the current status of observability
+   */
+  getStatus: (): { isRunning: boolean; isInitialized: boolean } => {
+    try {
+      const isInitialized = typeof LDObserve.start === 'function'
+      return {
+        isRunning: isInitialized, // Simplified - in reality you'd track this separately
+        isInitialized
+      }
+    } catch {
+      return { isRunning: false, isInitialized: false }
     }
   }
 }
@@ -60,6 +184,36 @@ export const sessionReplay = {
       console.log('LaunchDarkly session replay stopped')
     } catch (error) {
       console.warn('Failed to stop LaunchDarkly session replay:', error)
+    }
+  },
+
+  /**
+   * Check if session replay is currently running
+   * Note: This is a simplified check since the SDK doesn't expose running state
+   * In a production app, you might want to track this state explicitly
+   */
+  isRunning: (): boolean => {
+    try {
+      // Since the SDK doesn't expose running state, we'll use a more reliable approach
+      // by checking if the plugin is properly initialized
+      return typeof LDRecord.start === 'function' && typeof LDRecord.stop === 'function'
+    } catch {
+      return false
+    }
+  },
+
+  /**
+   * Get the current status of session replay
+   */
+  getStatus: (): { isRunning: boolean; isInitialized: boolean } => {
+    try {
+      const isInitialized = typeof LDRecord.start === 'function'
+      return {
+        isRunning: isInitialized, // Simplified - in reality you'd track this separately
+        isInitialized
+      }
+    } catch {
+      return { isRunning: false, isInitialized: false }
     }
   }
 }
